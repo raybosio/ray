@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>ray</title>
+<style>
+  body {
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 50px;
+    font-family: monospace;
+  }
+
+  .phrase-container {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
+
+  .letters-big {
+    display: flex;
+    gap: 10px;
+  }
+
+  .heart-container {
+    margin-top: 40px;
+  }
+
+  .letters-small-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+  }
+
+  .letters-small {
+    display: flex;
+    gap: 8px;
+  }
+
+  .letter {
+    display: grid;
+    grid-template-columns: repeat(5, 20px);
+    grid-template-rows: repeat(7, 20px);
+    gap: 3px;
+  }
+
+  .letter.small {
+    grid-template-columns: repeat(3, 10px);
+    grid-template-rows: repeat(5, 14px);
+    gap: 2px;
+  }
+
+  .block {
+    border-radius: 3px;
+    transition: opacity 0.4s ease;
+    opacity: 0;
+  }
+
+  .block.big {
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+  }
+
+  .block.big.filled {
+    background-color: rgb(255, 111, 183);
+  }
+
+  .block.small {
+    width: 10px;
+    height: 14px;
+    background-color: transparent;
+  }
+
+  .block.small.filled {
+    background-color: rgb(98, 245, 255, 0.61);
+  }
+</style>
+</head>
+<body>
+
+<div class="phrase-container">
+  <div class="letters-big" id="lettersBig"></div>
+</div>
+<div class="heart-container" id="heartContainer"></div>
+<div class="letters-small-container">
+  <div class="letters-small" id="lettersSmall"></div>
+</div>
+
+<script>
+  const lettersMapBig = {
+    'E': [[1,1,1,1,1],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,0],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,1]],
+    'U': [[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+    'T': [[1,1,1,1,1],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0]],
+    'A': [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+    'M': [[1,0,0,0,1],[1,1,0,1,1],[1,0,1,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+    'O': [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+    ' ': [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
+  };
+
+  const lettersMapSmall = {
+    'R': [[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,1]],
+    'A': [[0,1,0],[1,0,1],[1,1,1],[1,0,1],[1,0,1]],
+    'Y': [[1,0,1],[1,0,1],[0,1,0],[0,1,0],[0,1,0]]
+  };
+
+  const heartMap = [
+    [0,1,0,1,0],
+    [1,1,1,1,1],
+    [1,1,1,1,1],
+    [1,1,1,1,1],
+    [0,1,1,1,0],
+    [0,0,1,0,0],
+    [0,0,0,0,0]
+  ];
+
+  const phraseBig = "EU TE AMO MO";
+  const phraseSmall = "RAY";
+
+  const lettersBigContainer = document.getElementById('lettersBig');
+  const lettersSmallContainer = document.getElementById('lettersSmall');
+  const heartContainer = document.getElementById('heartContainer');
+
+  function createLetterGrid(char, size = 'big') {
+    const letterDiv = document.createElement('div');
+    letterDiv.classList.add('letter');
+    if(size === 'small') letterDiv.classList.add('small');
+
+    const map = size === 'big' ? lettersMapBig : lettersMapSmall;
+    const matrix = map[char] || (size === 'big' ? lettersMapBig[' '] : [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]);
+
+    for(let r = 0; r < matrix.length; r++) {
+      for(let c = 0; c < matrix[r].length; c++) {
+        const block = document.createElement('div');
+        block.classList.add('block');
+        block.classList.add(size === 'big' ? 'big' : 'small');
+        if(matrix[r][c] === 1) block.classList.add('filled');
+        letterDiv.appendChild(block);
+      }
+    }
+    return letterDiv;
+  }
+
+  function createHeart() {
+    const heartDiv = document.createElement('div');
+    heartDiv.classList.add('letter');
+    heartDiv.style.gridTemplateColumns = "repeat(5, 20px)";
+    heartDiv.style.gridTemplateRows = "repeat(7, 20px)";
+    heartDiv.style.gap = "3px";
+
+    for(let r=0; r < heartMap.length; r++) {
+      for(let c=0; c < heartMap[r].length; c++) {
+        const block = document.createElement('div');
+        block.classList.add('block', 'big');
+        if(heartMap[r][c] === 1) {
+          block.classList.add('filled');
+        }
+        heartDiv.appendChild(block);
+      }
+    }
+    return heartDiv;
+  }
+
+  for (let ch of phraseBig) {
+    lettersBigContainer.appendChild(createLetterGrid(ch, 'big'));
+  }
+
+  heartContainer.appendChild(createHeart());
+
+  for (let ch of phraseSmall) {
+    lettersSmallContainer.appendChild(createLetterGrid(ch, 'small'));
+  }
+
+  function animateBlocks(blocks, delay = 0) {
+    blocks.forEach((block, i) => {
+      setTimeout(() => {
+        block.style.opacity = 1;
+      }, delay + i * 30);
+    });
+    return delay + blocks.length * 30;
+  }
+
+  let delay = 0;
+  delay = animateBlocks(Array.from(document.querySelectorAll('.block.big.filled')), delay);
+  delay = animateBlocks(Array.from(document.querySelectorAll('.heart-container .block.filled')), delay + 200);
+  animateBlocks(Array.from(document.querySelectorAll('.block.small.filled')), delay + 400);
+</script>
+</body>
+</html>
